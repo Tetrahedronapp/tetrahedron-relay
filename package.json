@@ -1,0 +1,15 @@
+{
+  "name": "tetrahedron-relay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A tiny Vercel Edge Function that lets your Tetrahedron AI seats keep responding while your browser tab is closed.",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}
