@@ -118,11 +118,20 @@ function passThrough(upstream: Response, req: Request): Response {
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("origin") ?? "*";
+  // Echo back whatever headers the browser asks for in preflight. The
+  // Anthropic and OpenAI SDKs add a bunch of telemetry headers
+  // (x-stainless-os, x-stainless-lang, …) that change between SDK
+  // versions; hardcoding a list is brittle and breaks deploys when the
+  // SDK adds new ones. Echoing the request is safe here because the
+  // relay validates auth explicitly via AUTH_TOKEN — headers themselves
+  // don't grant access.
+  const requested = req.headers.get("access-control-request-headers");
+  const defaults =
+    "authorization, content-type, x-api-key, anthropic-version, anthropic-beta, anthropic-dangerous-direct-browser-access, openai-organization";
   return {
     "access-control-allow-origin": origin,
     "access-control-allow-methods": "POST, OPTIONS, GET",
-    "access-control-allow-headers":
-      "authorization, content-type, x-api-key, anthropic-version, anthropic-beta, anthropic-dangerous-direct-browser-access, openai-organization",
+    "access-control-allow-headers": requested || defaults,
     "access-control-max-age": "86400",
     "vary": "origin",
   };
